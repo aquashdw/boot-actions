@@ -15,7 +15,7 @@ jobs:
       - name: Set Image Tag
         run: export TAG=$(date +%s)-ci
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag aquashdw/todo-boot-actions:${TAG}
+        run: docker build . --file Dockerfile --tag "aquashdw/todo-boot-actions:${TAG}"
 
   push:
     runs-on: ubuntu-latest
