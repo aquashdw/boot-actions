@@ -12,17 +12,28 @@ on:
     branches:
       - canary
   pull_request:
-    types: [opened, edited, reopened]
+    types: [opened, edited, synchronize, reopened]
     branches:
       - canary
 
 jobs:
-  build:
-
+  boot-jar:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
+    steps:
+      - uses: actions/checkout@v4
+      - uses: graalvm/setup-graalvm@v1.2.1
+        with:
+          java-version: '17'
+          distribution: 'graalvm'
+      - name: Build JAR with Gradle Wrapper
+        run: ./gradlew bootJar
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact.jar
+          path: build/libs/*.jar
+  test:
+    runs-on: ubuntu-latest
     steps:
     # Github Actions 제공 Repository Checkout Action
     - uses: actions/checkout@v4
@@ -43,5 +54,5 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3.1.0 # v3.1.0
 
-    - name: Build with Gradle Wrapper
+    - name: Test with Gradle Wrapper
       run: ./gradlew test
