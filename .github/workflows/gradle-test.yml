@@ -9,9 +9,12 @@ name: Java CI with Gradle
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - canary
   pull_request:
-    branches: [ "main" ]
+    types: [opened, edited, reopened]
+    branches:
+      - canary
 
 jobs:
   build:
