@@ -1,18 +1,19 @@
-name: Docker Image CI
+name: Docker Image Delivery
 
 on:
-  push:
-    branches: [ "actions/docker" ]
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - 'main'
+    types:
+      - closed
 
 jobs:
-  build:
+  deliver:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Set Image Tag
-#        run: echo $(date +%s)-ci >> $GITHUB_ENV
         id: image-tag
         run: echo "TAG=$(date +%s)-ci" >> "$GITHUB_OUTPUT"
       - name: Build the Docker image
