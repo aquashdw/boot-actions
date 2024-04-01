@@ -29,4 +29,4 @@ jobs:
       - name: Push the Docker Image
         env:
           TAG: ${{ steps.image-tag.outputs.TAG }}
-        run: docker push "aquashdw/todo-boot:$TAG"
+        run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:$TAG"
