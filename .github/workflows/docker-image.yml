@@ -1,11 +1,11 @@
 name: Docker Image Delivery
 
 on:
-  pull_request:
-    branches:
-      - 'main'
-    types:
-      - closed
+#  pull_request:
+#    branches:
+#      - 'main'
+#    types:
+#      - closed
   workflow_dispatch:
 
 jobs:
@@ -30,3 +30,26 @@ jobs:
         env:
           TAG: ${{ steps.image-tag.outputs.TAG }}
         run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:$TAG"
+
+      # create latest
+      - name: Tag Image as Latest
+        env:
+          TAG: ${{ steps.image-tag.outputs.TAG }}
+        run: |
+          docker tag "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:$TAG" \
+          "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:latest"
+      - name: Push Latest
+        run: docker push "${{ secrets.DOCKERHUB_USERNAME }}/todo-boot:latest"
+
+      # AWS CodeDeploy
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+      - name: Create Deployment
+        run: | 
+          aws deploy create-deployment \
+          --cli-input-json file://./code-deploy.json \
+          --region ap-northeast-2
